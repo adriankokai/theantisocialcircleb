@@ -9,8 +9,12 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+from dotenv import load_dotenv
 from pathlib import Path
+import dj_database_url
+import os
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'g0qrztll)^b46x100+pyz&1&*la904_q@1p7p=qtp@*v&+!((t'
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -36,11 +40,22 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django-dropbox-storage.django_dropbox_storage',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    'store',
+    'rest_framework',
+    'corsheaders',
 ]
 
+DEFAULT_FILE_STORAGE = 'django-dropbox-storage.django_dropbox_storage.storage.DropboxStorage'
+DROPBOX_ACCESS_TOKEN = str(os.getenv('DBX'))
+DROPBOX_ROOT_PATH = '/Public'
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -73,12 +88,20 @@ WSGI_APPLICATION = 'theantisocialcircle.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+heroku_db_uri = str(os.getenv('heroku_db_uri'))
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dbl27bcl4e7r9o',
+        'USER': 'moflenhfuxqpst',
+        'PASSWORD': 'fa1dd6a402e7a3fcedbcbaf58a948e88d477e35a056af218d11db9ae24971771',
+        'HOST': 'ec2-34-195-233-155.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
+db_from_env = dj_database_url.config(heroku_db_uri, conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
 
 # Password validation
@@ -113,8 +136,18 @@ USE_L10N = True
 
 USE_TZ = True
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
+# https://docs.djangoproject.com/en/1.9/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_URL = '/static/'
+MEDIA_URL   = '/media/'
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:8000',
+]

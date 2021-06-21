@@ -1,0 +1,9 @@
+django
+django-heroku
+pillow
+gunicorn
+djangorestframework
+django-cors-headers
+dj_database_url
+dropbox
+
