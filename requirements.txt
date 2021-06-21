@@ -6,5 +6,4 @@ djangorestframework
 django-cors-headers
 dj_database_url
 dropbox
-dotenv
 
