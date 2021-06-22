@@ -9,12 +9,12 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-##from dotenv import load_dotenv
+from dotenv import load_dotenv
 from pathlib import Path
 import dj_database_url
 import os
 
-##load_dotenv()
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,9 +43,11 @@ INSTALLED_APPS = [
     'django-dropbox-storage.django_dropbox_storage',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'store',
+    'main',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
+    'rest_auth'
 ]
 
 DEFAULT_FILE_STORAGE = 'django-dropbox-storage.django_dropbox_storage.storage.DropboxStorage'
@@ -93,10 +95,10 @@ heroku_db_uri = str(os.getenv('heroku_db_uri'))
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dbl27bcl4e7r9o',
-        'USER': 'moflenhfuxqpst',
-        'PASSWORD': 'fa1dd6a402e7a3fcedbcbaf58a948e88d477e35a056af218d11db9ae24971771',
-        'HOST': 'ec2-34-195-233-155.compute-1.amazonaws.com',
+        'NAME': 'd3t1g4d5brvtg9',
+        'USER': 'jgpaimrnxendxq',
+        'PASSWORD': '7cc89f1dbc9bd29057b304093d5bd93db643291d39a647a12d171172479e2478',
+        'HOST': 'ec2-54-145-224-156.compute-1.amazonaws.com',
         'PORT': '5432',
     }
 }
@@ -145,6 +147,18 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_URL = '/static/'
 MEDIA_URL   = '/media/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
